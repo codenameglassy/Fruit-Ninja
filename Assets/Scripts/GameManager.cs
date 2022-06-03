@@ -19,17 +19,28 @@ public struct SpawnPos
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager instance;
     [Tooltip("Position To spwan fruits from")]
     public SpawnPos[] spawnPos;
 
     [Space(10)]
     public GameObject[] fruits;
 
-    public 
+    [Space(10)]
+    public GameObject[] splashEffects;
+
+    public float score;
+    public float combo=1;
+    private void Awake()
+    {
+        if (instance == null)
+            instance = this;
+    }
     // Start is called before the first frame update
     void Start()
     {
         StartCoroutine("SpawnFruits");
+        Time.timeScale = 0.75f;
     }
 
     // Update is called once per frame
@@ -48,7 +59,7 @@ public class GameManager : MonoBehaviour
             Vector3 dir = (transform.up * Mathf.Cos(a) + transform.right * Mathf.Sin(a)).normalized;
             GameObject fruit =Instantiate(fruits[fruitindex],spawnPos[spawnIndex].spawnPosition.position,Quaternion.identity);
             fruit.GetComponent<fruitController>().AddForce(dir, spawnPos[spawnIndex].force);
-            Destroy(fruit, 5);
+            Destroy(fruit, 10);
             yield return new WaitForSeconds(1f);
         }
     }
@@ -64,5 +75,19 @@ public class GameManager : MonoBehaviour
             Vector3 dirb = (transform.up * Mathf.Cos(b) + transform.right * Mathf.Sin(b)).normalized;
             Gizmos.DrawRay(pos.spawnPosition.position, dirb*pos.force);
         }
+    }
+
+    public void PlaySplash(Vector2 position,Color splashColor,float scale)
+    {
+        int splashEffectIndex = Random.Range(0, splashEffects.Length);
+        GameObject splashObject = Instantiate(splashEffects[splashEffectIndex], position, Quaternion.identity);
+        splashObject.GetComponent<SpriteRenderer>().color = splashColor;
+        splashObject.transform.localScale = splashObject.transform.localScale*scale;
+        Destroy(splashObject, 5);
+    }
+
+    public void AddScore(float amount)
+    {
+        score += amount*combo;
     }
 }

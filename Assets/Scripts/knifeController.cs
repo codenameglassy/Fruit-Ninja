@@ -9,6 +9,7 @@ public enum FruitType
     melon,
     papaya,
     melonBluyish,
+    bomb,
 }
 
 public class knifeController : MonoBehaviour
@@ -17,6 +18,9 @@ public class knifeController : MonoBehaviour
     public GameObject Currenttrail;
     private Vector2 initialPos;
     private bool cutting;
+    private float clickTime;
+
+    private float lastCut;
     // Start is called before the first frame update
     void Start()
     {
@@ -30,7 +34,6 @@ public class knifeController : MonoBehaviour
         {
             cutting = true;
             Currenttrail = GameObject.Instantiate(trail, transform);
-            initialPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         }
         else if (Input.GetMouseButtonUp(0))
         {
@@ -50,38 +53,53 @@ public class knifeController : MonoBehaviour
     {
         if (!cutting)
             return;
+        ////Swiping speed is not fast enough;
+        //print(Vector2.Distance(transform.position, initialPos) / Time.deltaTime);
+        //if (Vector2.Distance(transform.position, initialPos) /Time.deltaTime < 4)
+        //    return;
 
         if (collision.gameObject.CompareTag("Fruits"))
         {
-            FruitType type = collision.gameObject.GetComponent<fruitController>().fruitType;
-            //Vector2 direction = Vector2.Distance
-            switch (type)
+            fruitController fruit = collision.gameObject.GetComponent<fruitController>();
+            fruit.CutFruit();
+            Color color = Color.white;
+            
+            float scale = 1;
+            switch (fruit.fruitType)
             {
                 case FruitType.apple:
-                    print("apple");
+                    color = Color.red;
+                    scale = 0.7f;
                     break;
                 case FruitType.banana:
-                    print("banana");
-
+                    color = Color.yellow;
+                    scale = 0.7f;
                     break;
                 case FruitType.melon:
-                    print("melon");
-
+                    color = Color.red;
                     break;
                 case FruitType.papaya:
-                    print("papaya");
-
+                    color = new Color(1,165/255,0);
                     break;
-
                 case FruitType.melonBluyish:
-                    print("melonBluyish");
-
+                    color = Color.blue;
+                    break;
+                case FruitType.bomb:
                     break;
                 default:
-                    print("something wrong");
-
                     break;
             }
+            if ((Time.time - lastCut) < 1)
+            {
+                GameManager.instance.combo += 1;
+            }
+            else
+            {
+                GameManager.instance.combo = 1;
+            }
+            lastCut = Time.time;
+            GameManager.instance.AddScore(10);
+            GameManager.instance.PlaySplash(collision.transform.position, color,scale);
         }
     }
 }
