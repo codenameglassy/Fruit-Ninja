@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 public enum FruitType
 {
     apple,
@@ -24,7 +24,7 @@ public class knifeController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        DontDestroyOnLoad(this.gameObject);
     }
 
     // Update is called once per frame
@@ -38,8 +38,11 @@ public class knifeController : MonoBehaviour
         else if (Input.GetMouseButtonUp(0))
         {
             cutting = false;
-            Currenttrail.transform.SetParent(null);
-            Destroy(Currenttrail, 2);
+            if (Currenttrail != null)
+            {
+                Currenttrail.transform.SetParent(null);
+                Destroy(Currenttrail, 2);
+            }
         }
 
         if (cutting)
@@ -60,11 +63,15 @@ public class knifeController : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Fruits"))
         {
+            if(SceneManager.GetActiveScene().buildIndex == 1)
+            {
+                SceneManager.LoadScene(2);
+                return;
+            }
             fruitController fruit = collision.gameObject.GetComponent<fruitController>();
             fruit.CutFruit();
-            Color color = Color.white;
-            
-            float scale = 1;
+            Color color=Color.black;
+            float scale=1;
             switch (fruit.fruitType)
             {
                 case FruitType.apple:
@@ -85,20 +92,26 @@ public class knifeController : MonoBehaviour
                     color = Color.blue;
                     break;
                 case FruitType.bomb:
-                    break;
+                    fruit.cut = true;
+                    return;
                 default:
                     break;
             }
             if ((Time.time - lastCut) < 1)
             {
-                GameManager.instance.combo += 1;
+                GameManager.instance.increaseCombo();
+                
+                UIManager.instance.ShowCombo(Camera.main.WorldToScreenPoint(collision.transform.position),(int) GameManager.instance.combo);
             }
             else
             {
                 GameManager.instance.combo = 1;
+                UIManager.instance.DisableCombo();
             }
+            
             lastCut = Time.time;
             GameManager.instance.AddScore(10);
+            soundManager.instance.PlaySound(SoundType.slashSound);
             GameManager.instance.PlaySplash(collision.transform.position, color,scale);
         }
     }

@@ -18,7 +18,9 @@ public class fruitController : MonoBehaviour
     private float flowingSpeed;
     public Rigidbody2D rb;
 
+    private float spawnTime;
     public bool cut;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -27,6 +29,10 @@ public class fruitController : MonoBehaviour
         flowingSpeed = Random.Range(minflowingSpeed, maxflowingSpeed);
         cut = false;
         //rb.gravityScale = 0.5f;
+    }
+    private void Start()
+    {
+        spawnTime = Time.time;
     }
 
     public void AddForce(Vector2 direction,float force)
@@ -39,28 +45,61 @@ public class fruitController : MonoBehaviour
     void Update()
     {
         transform.Rotate(new Vector3(0,0,rotationSpeed*Time.deltaTime));
+        if (fruitType != FruitType.bomb)
+        {
+            if (GameManager.instance != null)
+            {
+                if (Time.time - spawnTime > 1 * GameManager.instance.timeScale)
+                {
+                    if (cameraController.instance.CheckBound(transform.position))
+                    {
+                        Destroy(this.gameObject);
+                        GameManager.instance.DecreseLife();
+                    }
+                }
+            }
+        }
+        
     }
 
     public void CutFruit()
     {
-        GameObject cutPiece = Instantiate(HalfFruit,transform.position,transform.rotation);
-        
-        Transform firsthalf = cutPiece.transform.GetChild(0);
-        Rigidbody2D rigidbR = firsthalf.GetComponent<Rigidbody2D>();
-        if (rigidbR != null)
+        if (fruitType == FruitType.bomb)
         {
-            rigidbR.AddTorque(100);
-            //rigidbR.AddForce(Vector2.left*10, ForceMode2D.Impulse);
-        }
-        Transform secondhalf = cutPiece.transform.GetChild(1);
-        Rigidbody2D rigidbL = secondhalf.GetComponent<Rigidbody2D>();
-        if (rigidbL != null)
-        {
-            rigidbL.AddTorque(-100);
-            //rigidbR.AddForce(Vector2.right * 10, ForceMode2D.Impulse);
-        }
+            if (cut)
+                return;
+            GameManager.instance.SlowGame(0.2f);
 
-        Destroy(this.gameObject);
+            StartCoroutine("BombExplosionEffect");
+            //GameManager.instance.DecreseLife();
+        }
+        else
+        {
+            GameObject cutPiece = Instantiate(HalfFruit, transform.position, transform.rotation);
+
+            Transform firsthalf = cutPiece.transform.GetChild(0);
+            Rigidbody2D rigidbR = firsthalf.GetComponent<Rigidbody2D>();
+            if (rigidbR != null)
+            {
+                rigidbR.AddTorque(100);
+                //rigidbR.AddForce(Vector2.left*10, ForceMode2D.Impulse);
+            }
+            Transform secondhalf = cutPiece.transform.GetChild(1);
+            Rigidbody2D rigidbL = secondhalf.GetComponent<Rigidbody2D>();
+            if (rigidbL != null)
+            {
+                rigidbL.AddTorque(-100);
+                //rigidbR.AddForce(Vector2.right * 10, ForceMode2D.Impulse);
+            }
+            GameManager.instance.fruitscut++;
+            Destroy(this.gameObject);
+        }
         
+    }
+
+    IEnumerator BombExplosionEffect()
+    {
+        yield return new WaitForSeconds(0.5f/5);
+        GameManager.instance.ResumeGame();
     }
 }

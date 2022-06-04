@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using TMPro;
 
 [System.Serializable]
 public struct SpawnPos
@@ -15,7 +15,13 @@ public struct SpawnPos
     [Range(0,1000)]
     public float force;
 }
-
+[System.Serializable]
+public struct Levels
+{
+    public int Level;
+    public float timescale;
+    public int score;
+}
 
 public class GameManager : MonoBehaviour
 {
@@ -29,8 +35,34 @@ public class GameManager : MonoBehaviour
     [Space(10)]
     public GameObject[] splashEffects;
 
-    public float score;
-    public float combo=1;
+    public Transform lifeSpace;
+
+    public TMP_Text scoreText;
+    public TMP_Text fruitsCutText;
+    public TMP_Text GameOverScoreText;
+    public TMP_Text MaxComboText;
+    public TMP_Text GameOverhighscoreText;
+    public TMP_Text congratulationText;
+
+    public List<GameObject> lifesPrefab;
+
+    public int lifes;
+
+    public int score;
+    public int combo=1;
+
+    public float timeScale;
+
+
+    public float fruitscut;
+
+    private int maxCombo;
+
+    public List<Levels> levels;
+
+    public Levels activeLevel;
+
+    public HighScore highscore;
     private void Awake()
     {
         if (instance == null)
@@ -40,13 +72,33 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         StartCoroutine("SpawnFruits");
-        Time.timeScale = 0.75f;
+        timeScale = 1f;
+        Time.timeScale = timeScale;
+        soundManager.instance.PlaySound(SoundType.backgroundSound);
+        activeLevel = levels[0];
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    public void PauseGame()
+    {
+        UIManager.instance.DisableCombo();
+       
+        Time.timeScale = 0;
+    }
+
+    public void ResumeGame()
+    {
+        Time.timeScale = timeScale;
+    }
+
+    public void SlowGame(float value)
+    {
+        Time.timeScale = value; 
     }
 
     IEnumerator SpawnFruits()
@@ -59,8 +111,7 @@ public class GameManager : MonoBehaviour
             Vector3 dir = (transform.up * Mathf.Cos(a) + transform.right * Mathf.Sin(a)).normalized;
             GameObject fruit =Instantiate(fruits[fruitindex],spawnPos[spawnIndex].spawnPosition.position,Quaternion.identity);
             fruit.GetComponent<fruitController>().AddForce(dir, spawnPos[spawnIndex].force);
-            Destroy(fruit, 10);
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(0.5f*timeScale);
         }
     }
 
@@ -85,9 +136,63 @@ public class GameManager : MonoBehaviour
         splashObject.transform.localScale = splashObject.transform.localScale*scale;
         Destroy(splashObject, 5);
     }
-
-    public void AddScore(float amount)
+    private void SwitchLevel()
+    {
+        timeScale = activeLevel.timescale;
+        Time.timeScale = timeScale;
+    }
+    public void AddScore(int amount)
     {
         score += amount*combo;
+        scoreText.text = score.ToString();
+        for (int i = levels.Count-1; i >= 0; i--)
+        {
+            if(score>levels[i].score )
+            {
+                activeLevel = levels[i];
+                SwitchLevel();
+                return;
+            }
+        }
+    }
+
+    public void increaseCombo()
+    {
+        combo++;
+        if (combo > maxCombo)
+            maxCombo = combo;
+    }
+
+    public void DecreseLife()
+    {
+        lifes--;
+
+
+        //GameOver State
+        if (lifes <= 0)
+        {
+            UIManager.instance.SwitchCanvas(UIPanelType.GameOver);
+            PauseGame();
+            if (score > highscore.highscore)
+            {
+                highscore.highscore = score;
+                congratulationText.gameObject.SetActive(true);
+            }
+            fruitsCutText.text = "Fruits Cut :  " + fruitscut.ToString();
+            GameOverScoreText.text = "Score:          " + score.ToString();
+            MaxComboText.text = "Max Combo:  " + maxCombo.ToString();
+            GameOverhighscoreText.text = "High Score :    " + highscore.highscore.ToString();
+
+        }
+        else
+        {
+            Destroy(lifeSpace.GetChild(0).gameObject);
+        }
+        //StartCoroutine("DecreaseLife");
+    }
+
+    IEnumerator DecreaseLife()
+    {
+        yield return null;
     }
 }

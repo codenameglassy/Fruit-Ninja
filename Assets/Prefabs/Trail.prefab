@@ -9,9 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 383948461872098193}
+  - component: {fileID: -8134783192419208594}
   m_Layer: 0
   m_Name: Trail
-  m_TagString: Untagged
+  m_TagString: Trails
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -23,7 +24,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 383948461872098192}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -32,6 +33,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-8134783192419208594
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 383948461872098192}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fda6870b43712744a62dca157b3598f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &383948463187505503
 GameObject:
   m_ObjectHideFlags: 0
@@ -105,8 +118,8 @@ TrailRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Time: 0.2
+  m_SortingOrder: 1
+  m_Time: 0.1
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 0.1
@@ -115,21 +128,30 @@ TrailRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.5526314
-        inSlope: 0
-        outSlope: 0
+        value: 0.026315764
+        inSlope: 3.821749
+        outSlope: 3.821749
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.33333334
+        outWeight: 0.32781592
       - serializedVersion: 3
-        time: 0.99102455
-        value: 0.8456179
-        inSlope: 0.25610414
-        outSlope: 0.25610414
+        time: 0.27586663
+        value: 1
+        inSlope: -0.6213658
+        outSlope: -0.6213658
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0.20738517
+        inWeight: 0.6857302
+        outWeight: 0.15589193
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: -1.3562568
+        outSlope: -1.3562568
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.1742835
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
@@ -164,7 +186,7 @@ TrailRenderer:
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
     numCornerVertices: 0
-    numCapVertices: 3
+    numCapVertices: 0
     alignment: 0
     textureMode: 0
     shadowBias: 0.5
