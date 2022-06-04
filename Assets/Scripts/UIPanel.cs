@@ -11,6 +11,7 @@ public enum UIPanelType
     mainGame,
     pauseMenu,
     GameOver,
+    blank,
 }
 public class UIPanel : MonoBehaviour
 {

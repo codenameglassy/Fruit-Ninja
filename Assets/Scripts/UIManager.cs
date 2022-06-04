@@ -22,7 +22,6 @@ public class UIManager : MonoBehaviour
 
     public TMP_Text highscoreText;
 
-    public HighScore highscore;
 
     private void Awake()
     {
@@ -41,7 +40,7 @@ public class UIManager : MonoBehaviour
         musicSlider.onValueChanged.AddListener(delegate { OnMusicVolumeChanged(); });
         if (activeUIPanel.uiPanelType == UIPanelType.mainmenu)
         {
-            highscoreText.text = highscore.highscore.ToString();
+            highscoreText.text = PlayerPrefs.GetInt("Highscore").ToString();
         }
     }
 

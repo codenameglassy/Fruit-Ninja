@@ -131,15 +131,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3dd6bd39941630949a38cf156cfa8d16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FullFruit: {fileID: 0}
-  HalfFruit01: {fileID: 0}
-  HalfFruit02: {fileID: 0}
+  HalfFruit: {fileID: 0}
   fruitType: 5
   maxrotationSpeed: 100
   minrotationSpeed: 500
   maxflowingSpeed: 1
   minflowingSpeed: 4
   rb: {fileID: 0}
+  cut: 0
+  rayObjPrefab: {fileID: 7359308424955684951, guid: 8df0de87d7df5074a8e17e72b1950ff6, type: 3}
+  traumaAmount: 1
+  cameraShakeData: {fileID: 11400000, guid: 0840f65034feb6a49aa4f3e20e01d2c1, type: 2}
 --- !u!50 &4659947615903158658
 Rigidbody2D:
   serializedVersion: 4

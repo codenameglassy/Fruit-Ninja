@@ -1,3 +1,4 @@
+using FirstGearGames.SmoothCameraShaker;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,6 +22,10 @@ public class fruitController : MonoBehaviour
     private float spawnTime;
     public bool cut;
 
+    public GameObject rayObjPrefab;
+
+    public float traumaAmount;
+    public ShakeData cameraShakeData;
     // Start is called before the first frame update
     void Awake()
     {
@@ -35,16 +40,16 @@ public class fruitController : MonoBehaviour
         spawnTime = Time.time;
     }
 
-    public void AddForce(Vector2 direction,float force)
+    public void AddForce(Vector2 direction, float force)
     {
         float totalforce = (force + flowingSpeed);
-        rb.AddForce( totalforce* direction, ForceMode2D.Impulse);
+        rb.AddForce(totalforce * direction, ForceMode2D.Impulse);
     }
 
     // Update is called once per frame
     void Update()
     {
-        transform.Rotate(new Vector3(0,0,rotationSpeed*Time.deltaTime));
+        transform.Rotate(new Vector3(0, 0, rotationSpeed * Time.deltaTime));
         if (fruitType != FruitType.bomb)
         {
             if (GameManager.instance != null)
@@ -59,7 +64,7 @@ public class fruitController : MonoBehaviour
                 }
             }
         }
-        
+
     }
 
     public void CutFruit(Vector3 cutPos)
@@ -68,10 +73,8 @@ public class fruitController : MonoBehaviour
         {
             if (cut)
                 return;
-            GameManager.instance.SlowGame(0.2f);
-
+            Camera.main.GetComponent<CameraShaker>().Shake(cameraShakeData);
             StartCoroutine("BombExplosionEffect");
-            //GameManager.instance.DecreseLife();
         }
         else
         {
@@ -82,8 +85,8 @@ public class fruitController : MonoBehaviour
             targ.y -= objectPos.y;
 
             //Off by 90 degrees for some reasons
-            float angle = Mathf.Atan2(targ.y, targ.x) * Mathf.Rad2Deg-90;
-            GameObject cutPiece = Instantiate(HalfFruit, transform.position, Quaternion.Euler(new Vector3(0, 0, angle )));
+            float angle = Mathf.Atan2(targ.y, targ.x) * Mathf.Rad2Deg - 90;
+            GameObject cutPiece = Instantiate(HalfFruit, transform.position, Quaternion.Euler(new Vector3(0, 0, angle)));
             Transform firsthalf;
             Transform secondhalf;
 
@@ -109,16 +112,27 @@ public class fruitController : MonoBehaviour
                 rigidbL.AddTorque(-100);
                 //rigidbR.AddForce(Vector2.right * 10, ForceMode2D.Impulse);
             }
-            if (GameManager.instance!=null)
+            if (GameManager.instance != null)
                 GameManager.instance.fruitscut++;
             Destroy(this.gameObject);
         }
-        
+
     }
 
     IEnumerator BombExplosionEffect()
     {
-        yield return new WaitForSeconds(0.5f/5);
-        GameManager.instance.ResumeGame();
+        int initialDegree = 0;
+        GameManager.instance.PauseGame();
+        while (initialDegree != 360)
+        {
+            GameObject rayObj = Instantiate(rayObjPrefab, transform.position, Quaternion.Euler(0, 0, initialDegree),this.transform);
+            initialDegree += 45;
+            yield return new WaitForSecondsRealtime(0.2f);
+        }
+        UIManager.instance.SwitchCanvas(UIPanelType.blank);
+        
+        yield return new WaitForSecondsRealtime(0.5f);
+        Destroy(this.gameObject);
+        UIManager.instance.SwitchCanvas(UIPanelType.GameOver);
     }
 }

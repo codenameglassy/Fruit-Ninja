@@ -62,7 +62,6 @@ public class GameManager : MonoBehaviour
 
     public Levels activeLevel;
 
-    public HighScore highscore;
     private void Awake()
     {
         if (instance == null)
@@ -173,15 +172,15 @@ public class GameManager : MonoBehaviour
         {
             UIManager.instance.SwitchCanvas(UIPanelType.GameOver);
             PauseGame();
-            if (score > highscore.highscore)
+            if (score > PlayerPrefs.GetInt("Highscore"))
             {
-                highscore.highscore = score;
+                PlayerPrefs.SetInt("Highscore" ,score);
                 congratulationText.gameObject.SetActive(true);
             }
             fruitsCutText.text = "Fruits Cut :  " + fruitscut.ToString();
             GameOverScoreText.text = "Score:          " + score.ToString();
             MaxComboText.text = "Max Combo:  " + maxCombo.ToString();
-            GameOverhighscoreText.text = "High Score :    " + highscore.highscore.ToString();
+            GameOverhighscoreText.text = "High Score :    " + PlayerPrefs.GetInt("Highscore").ToString();
 
         }
         else
