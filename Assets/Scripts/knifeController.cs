@@ -16,9 +16,7 @@ public class knifeController : MonoBehaviour
 {
     public GameObject trail;
     public GameObject Currenttrail;
-    private Vector2 initialPos;
     private bool cutting;
-    private float clickTime;
 
     private float lastCut;
     // Start is called before the first frame update
@@ -61,6 +59,7 @@ public class knifeController : MonoBehaviour
         //if (Vector2.Distance(transform.position, initialPos) /Time.deltaTime < 4)
         //    return;
 
+
         if (collision.gameObject.CompareTag("Fruits"))
         {
             if(SceneManager.GetActiveScene().buildIndex == 1)
@@ -69,7 +68,7 @@ public class knifeController : MonoBehaviour
                 return;
             }
             fruitController fruit = collision.gameObject.GetComponent<fruitController>();
-            fruit.CutFruit();
+            fruit.CutFruit(transform.position);
             Color color=Color.black;
             float scale=1;
             switch (fruit.fruitType)

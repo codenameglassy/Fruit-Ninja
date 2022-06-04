@@ -62,7 +62,7 @@ public class fruitController : MonoBehaviour
         
     }
 
-    public void CutFruit()
+    public void CutFruit(Vector3 cutPos)
     {
         if (fruitType == FruitType.bomb)
         {
@@ -75,23 +75,42 @@ public class fruitController : MonoBehaviour
         }
         else
         {
-            GameObject cutPiece = Instantiate(HalfFruit, transform.position, transform.rotation);
+            Vector3 targ = cutPos;
+            targ.z = 0f;
+            Vector3 objectPos = transform.position;
+            targ.x -= objectPos.x;
+            targ.y -= objectPos.y;
 
-            Transform firsthalf = cutPiece.transform.GetChild(0);
+            //Off by 90 degrees for some reasons
+            float angle = Mathf.Atan2(targ.y, targ.x) * Mathf.Rad2Deg-90;
+            GameObject cutPiece = Instantiate(HalfFruit, transform.position, Quaternion.Euler(new Vector3(0, 0, angle )));
+            Transform firsthalf;
+            Transform secondhalf;
+
+            if (cutPiece.transform.rotation.x > -90 && cutPiece.transform.rotation.x < 90)
+            {
+                firsthalf = cutPiece.transform.GetChild(0);
+                secondhalf = cutPiece.transform.GetChild(1);
+            }
+            else
+            {
+                firsthalf = cutPiece.transform.GetChild(1);
+                secondhalf = cutPiece.transform.GetChild(0);
+            }
             Rigidbody2D rigidbR = firsthalf.GetComponent<Rigidbody2D>();
             if (rigidbR != null)
             {
                 rigidbR.AddTorque(100);
                 //rigidbR.AddForce(Vector2.left*10, ForceMode2D.Impulse);
             }
-            Transform secondhalf = cutPiece.transform.GetChild(1);
             Rigidbody2D rigidbL = secondhalf.GetComponent<Rigidbody2D>();
             if (rigidbL != null)
             {
                 rigidbL.AddTorque(-100);
                 //rigidbR.AddForce(Vector2.right * 10, ForceMode2D.Impulse);
             }
-            GameManager.instance.fruitscut++;
+            if (GameManager.instance!=null)
+                GameManager.instance.fruitscut++;
             Destroy(this.gameObject);
         }
         
