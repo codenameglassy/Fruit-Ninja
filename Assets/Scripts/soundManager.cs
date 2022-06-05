@@ -6,9 +6,13 @@ using UnityEngine.UI;
 
 public enum SoundType
 {
+    none,
     mainMenuSound,
     backgroundSound,
     slashSound,
+    uiSound,
+    pauseSound,
+    explosion,
 }
 
 
@@ -19,11 +23,16 @@ public class soundManager : MonoBehaviour
     public List<AudioClip> backGroundSound;
 
     public List<AudioClip> slashEffectSounds;
+    public List<AudioClip> uiSounds;
+    public AudioClip pauseResumeSound;
+    public AudioClip explosionSound;
+    public float backGroundAudioVolume;
+    public float soundeffectVolume;
 
+    private AudioSource UISoundSource;
     private AudioSource backGroundAudioSource;
     private AudioSource slashAudioSource;
-    // Start is called before the first frame update
-    
+
     private void Awake()
     {
         if (instance == null)
@@ -35,6 +44,8 @@ public class soundManager : MonoBehaviour
     void Start()
     {
         PlaySound(SoundType.mainMenuSound);
+        MusicVolumeChanged(backGroundAudioVolume);
+        SoundVolumeChanged(soundeffectVolume);
         SceneManager.LoadScene(1);
     }
 
@@ -56,6 +67,8 @@ public class soundManager : MonoBehaviour
                         break;
                     
                 }
+                MusicVolumeChanged(backGroundAudioVolume);
+                SoundVolumeChanged(soundeffectVolume);
             }
         }
     }
@@ -98,6 +111,40 @@ public class soundManager : MonoBehaviour
                 slashAudioSource.clip = clip;
                 slashAudioSource.loop = false;
                 slashAudioSource.Play();
+                break;
+
+            case SoundType.uiSound:
+                soundIndex = Random.Range(0, uiSounds.Count);
+                clip = uiSounds[soundIndex];
+                if (UISoundSource == null)
+                {
+                    UISoundSource = gameObject.AddComponent<AudioSource>();
+                }
+                UISoundSource.clip = clip;
+                UISoundSource.loop = false;
+                UISoundSource.Play();
+                break;
+            case SoundType.pauseSound:
+                clip = pauseResumeSound;
+                if (UISoundSource == null)
+                {
+                    UISoundSource = gameObject.AddComponent<AudioSource>();
+                }
+                UISoundSource.clip = clip;
+                UISoundSource.loop = false;
+                UISoundSource.Play();
+                break;
+
+            case SoundType.explosion:
+                clip = explosionSound;
+                if (backGroundAudioSource == null)
+                {
+                    backGroundAudioSource = gameObject.AddComponent<AudioSource>();
+                }
+                backGroundAudioSource.clip = clip;
+                backGroundAudioSource.loop = false;
+                MusicVolumeChanged(1);
+                backGroundAudioSource.Play();
                 break;
             default:
                 break;

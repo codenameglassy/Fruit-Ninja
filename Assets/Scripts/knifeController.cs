@@ -16,8 +16,9 @@ public class knifeController : MonoBehaviour
 {
     public GameObject trail;
     public GameObject Currenttrail;
-    private bool cutting;
 
+
+    private bool cutting;
     private float lastCut;
     // Start is called before the first frame update
     void Start()
@@ -54,11 +55,6 @@ public class knifeController : MonoBehaviour
     {
         if (!cutting)
             return;
-        ////Swiping speed is not fast enough;
-        //print(Vector2.Distance(transform.position, initialPos) / Time.deltaTime);
-        //if (Vector2.Distance(transform.position, initialPos) /Time.deltaTime < 4)
-        //    return;
-
 
         if (collision.gameObject.CompareTag("Fruits"))
         {

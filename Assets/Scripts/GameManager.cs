@@ -30,13 +30,15 @@ public class GameManager : MonoBehaviour
     public SpawnPos[] spawnPos;
 
     [Space(10)]
-    public GameObject[] fruits;
+    public GameObject[] fruitsPrefabs;
+    public GameObject bombPrefab;
 
     [Space(10)]
     public GameObject[] splashEffects;
 
     public Transform lifeSpace;
 
+    [Header("UI Texts")]
     public TMP_Text scoreText;
     public TMP_Text fruitsCutText;
     public TMP_Text GameOverScoreText;
@@ -46,22 +48,22 @@ public class GameManager : MonoBehaviour
 
     public List<GameObject> lifesPrefab;
 
-    public int lifes;
-
-    public int score;
-    public int combo=1;
-
-    public float timeScale;
-
-
-    public float fruitscut;
-
-    private int maxCombo;
-
     public List<Levels> levels;
 
+    [SerializeField]private float spawnDuration=0.5f;
+
+    [Space(10)]
+    [Range(0,100)]
+    [SerializeField]private int bombSpawnChance=10;
+
+    [HideInInspector] public int lifes;
+    [HideInInspector] public int score;
+    [HideInInspector] public int combo=1;
+    public float timeScale;
+    [HideInInspector] public float fruitscut;
     public Levels activeLevel;
 
+    private int maxCombo;
     private void Awake()
     {
         if (instance == null)
@@ -71,16 +73,10 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         StartCoroutine("SpawnFruits");
-        timeScale = 1f;
+        timeScale = 0.75f;
         Time.timeScale = timeScale;
         soundManager.instance.PlaySound(SoundType.backgroundSound);
         activeLevel = levels[0];
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     public void PauseGame()
@@ -104,13 +100,22 @@ public class GameManager : MonoBehaviour
     {
         while (true)
         {
-            int fruitindex = Random.Range(0, fruits.Length);
+
             int spawnIndex = Random.Range(0, spawnPos.Length);
             float a =Random.Range( spawnPos[spawnIndex].forceAngleLeft * Mathf.Deg2Rad, spawnPos[spawnIndex].forceAngleRight * Mathf.Deg2Rad);
             Vector3 dir = (transform.up * Mathf.Cos(a) + transform.right * Mathf.Sin(a)).normalized;
-            GameObject fruit =Instantiate(fruits[fruitindex],spawnPos[spawnIndex].spawnPosition.position,Quaternion.identity);
+            GameObject fruit;
+            if (Random.Range(0, 100) <= bombSpawnChance)
+            {
+                fruit = Instantiate(bombPrefab, spawnPos[spawnIndex].spawnPosition.position, Quaternion.identity);
+            }
+            else
+            {
+                int fruitIndex = Random.Range(0, fruitsPrefabs.Length);
+                fruit = Instantiate(fruitsPrefabs[fruitIndex], spawnPos[spawnIndex].spawnPosition.position, Quaternion.identity);
+            }
             fruit.GetComponent<fruitController>().AddForce(dir, spawnPos[spawnIndex].force);
-            yield return new WaitForSeconds(0.5f*timeScale);
+            yield return new WaitForSeconds(spawnDuration * timeScale);
         }
     }
 
@@ -166,32 +171,30 @@ public class GameManager : MonoBehaviour
     {
         lifes--;
 
-
         //GameOver State
         if (lifes <= 0)
         {
-            UIManager.instance.SwitchCanvas(UIPanelType.GameOver);
-            PauseGame();
-            if (score > PlayerPrefs.GetInt("Highscore"))
-            {
-                PlayerPrefs.SetInt("Highscore" ,score);
-                congratulationText.gameObject.SetActive(true);
-            }
-            fruitsCutText.text = "Fruits Cut :  " + fruitscut.ToString();
-            GameOverScoreText.text = "Score:          " + score.ToString();
-            MaxComboText.text = "Max Combo:  " + maxCombo.ToString();
-            GameOverhighscoreText.text = "High Score :    " + PlayerPrefs.GetInt("Highscore").ToString();
-
+            GameOver();
         }
         else
         {
             Destroy(lifeSpace.GetChild(0).gameObject);
         }
-        //StartCoroutine("DecreaseLife");
     }
 
-    IEnumerator DecreaseLife()
+    public void GameOver()
     {
-        yield return null;
+        UIManager.instance.SwitchCanvas(UIPanelType.GameOver);
+        PauseGame();
+        if (score > PlayerPrefs.GetInt("Highscore"))
+        {
+            PlayerPrefs.SetInt("Highscore", score);
+            congratulationText.gameObject.SetActive(true);
+        }
+        fruitsCutText.text = "Fruits Cut :  " + fruitscut.ToString();
+        GameOverScoreText.text = "Score:          " + score.ToString();
+        MaxComboText.text = "Max Combo:  " + maxCombo.ToString();
+        GameOverhighscoreText.text = "High Score :    " + PlayerPrefs.GetInt("Highscore").ToString();
     }
+
 }

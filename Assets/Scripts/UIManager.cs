@@ -20,8 +20,10 @@ public class UIManager : MonoBehaviour
 
     private GameObject comboSpwaned;
 
+    [Space(10)]
+    [Header("Only for Main Menu")]
     public TMP_Text highscoreText;
-
+    public GameObject mainMenuFruit;
 
     private void Awake()
     {
@@ -59,15 +61,23 @@ public class UIManager : MonoBehaviour
 
             if (panel.uiPanelType == targetPanel)
             {
+                
                 activeUIPanel = panel;
             }
             else
             {
+                if (mainMenuFruit != null)
+                    mainMenuFruit.SetActive(false);
                 panel.gameObject.SetActive(false);
             }
         }
         
         activeUIPanel.gameObject.SetActive(true);
+        if (activeUIPanel.uiPanelType == UIPanelType.mainmenu)
+        {
+            if (mainMenuFruit != null)
+                mainMenuFruit.SetActive(true);
+        }
     }
 
     public void OnMusicVolumeChanged()

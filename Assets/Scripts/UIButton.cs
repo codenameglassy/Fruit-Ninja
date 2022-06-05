@@ -16,6 +16,8 @@ public class UIButton : MonoBehaviour
     public UIPanelType nextPanel;
     private Button mybtn;
     public ButtonType mytype;
+
+    public SoundType soundType;
     public int sceneIndex;
     private void Start()
     {
@@ -29,7 +31,7 @@ public class UIButton : MonoBehaviour
     void OnClicked()
     {
         UIManager.instance.SwitchCanvas(nextPanel);
-
+        print(mytype);
         switch (mytype)
         {
             case ButtonType.none:
@@ -46,6 +48,11 @@ public class UIButton : MonoBehaviour
                 break;
             default:
                 break;
+        }
+
+        if (soundType != SoundType.none)
+        {
+            soundManager.instance.PlaySound(soundType);
         }
         
     }

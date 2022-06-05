@@ -5,9 +5,9 @@ using UnityEngine;
 public class cameraController : MonoBehaviour
 {
     public static cameraController instance;
-    public Vector2 leftBound;
-    public Vector2 rightBound;
-    public Vector2 bottomBound;
+    [HideInInspector] public Vector2 leftBound;
+    [HideInInspector] public Vector2 rightBound;
+    [HideInInspector] public Vector2 bottomBound;
 
     private void Awake()
     {
@@ -23,7 +23,6 @@ public class cameraController : MonoBehaviour
         rightBound = Camera.main.ScreenToWorldPoint(new(Camera.main.pixelRect.xMax, 0, 0));
         bottomBound = Camera.main.ScreenToWorldPoint(new(0,Camera.main.pixelRect.yMin, 0));
 
-        print((leftBound, rightBound, bottomBound));
     }
 
     public bool CheckBound(Vector2 pos)
@@ -35,9 +34,4 @@ public class cameraController : MonoBehaviour
         return false;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

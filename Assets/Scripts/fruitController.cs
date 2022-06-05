@@ -7,25 +7,25 @@ public class fruitController : MonoBehaviour
 {
     //public GameObject FullFruit;
     public GameObject HalfFruit;
-
     public FruitType fruitType;
 
     [SerializeField] private float maxrotationSpeed;
     [SerializeField] private float minrotationSpeed;
     [SerializeField] private float maxflowingSpeed;
     [SerializeField] private float minflowingSpeed;
+    public GameObject rayObjPrefab;
+
+    [Space(10)]
+    [Header("For camera Shake")]
+    public float traumaAmount;
+    public ShakeData cameraShakeData;
 
     private float rotationSpeed;
     private float flowingSpeed;
-    public Rigidbody2D rb;
-
     private float spawnTime;
-    public bool cut;
+    private Rigidbody2D rb;
 
-    public GameObject rayObjPrefab;
-
-    public float traumaAmount;
-    public ShakeData cameraShakeData;
+    [HideInInspector] public bool cut;
     // Start is called before the first frame update
     void Awake()
     {
@@ -50,21 +50,30 @@ public class fruitController : MonoBehaviour
     void Update()
     {
         transform.Rotate(new Vector3(0, 0, rotationSpeed * Time.deltaTime));
-        if (fruitType != FruitType.bomb)
+        
+        if (GameManager.instance != null)
         {
-            if (GameManager.instance != null)
+            if (Time.time - spawnTime > 1 * GameManager.instance.timeScale)
             {
-                if (Time.time - spawnTime > 1 * GameManager.instance.timeScale)
+                if (cameraController.instance.CheckBound(transform.position))
                 {
-                    if (cameraController.instance.CheckBound(transform.position))
+                    
+                    if(fruitType != FruitType.bomb)
                     {
-                        Destroy(this.gameObject);
                         GameManager.instance.DecreseLife();
                     }
+                    Destroy(this.gameObject);
+
                 }
             }
         }
-
+        if (fruitType == FruitType.bomb)
+        {
+            if (Time.timeScale == 0)
+            {
+                GetComponent<AudioSource>().volume = 0;
+            }
+        }
     }
 
     public void CutFruit(Vector3 cutPos)
@@ -104,13 +113,11 @@ public class fruitController : MonoBehaviour
             if (rigidbR != null)
             {
                 rigidbR.AddTorque(100);
-                //rigidbR.AddForce(Vector2.left*10, ForceMode2D.Impulse);
             }
             Rigidbody2D rigidbL = secondhalf.GetComponent<Rigidbody2D>();
             if (rigidbL != null)
             {
                 rigidbL.AddTorque(-100);
-                //rigidbR.AddForce(Vector2.right * 10, ForceMode2D.Impulse);
             }
             if (GameManager.instance != null)
                 GameManager.instance.fruitscut++;
@@ -123,9 +130,10 @@ public class fruitController : MonoBehaviour
     {
         int initialDegree = 0;
         GameManager.instance.PauseGame();
+        soundManager.instance.PlaySound(SoundType.explosion);
         while (initialDegree != 360)
         {
-            GameObject rayObj = Instantiate(rayObjPrefab, transform.position, Quaternion.Euler(0, 0, initialDegree),this.transform);
+            Instantiate(rayObjPrefab, transform.position, Quaternion.Euler(0, 0, initialDegree), this.transform);
             initialDegree += 45;
             yield return new WaitForSecondsRealtime(0.2f);
         }
@@ -133,6 +141,6 @@ public class fruitController : MonoBehaviour
         
         yield return new WaitForSecondsRealtime(0.5f);
         Destroy(this.gameObject);
-        UIManager.instance.SwitchCanvas(UIPanelType.GameOver);
+        GameManager.instance.GameOver();
     }
 }

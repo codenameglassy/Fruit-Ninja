@@ -379,5 +379,61 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3698872271070013687, guid: 76e2398d46528124497db1ab4e8c4eaa, type: 3}
+      propertyPath: explosionSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 352e8b276965b2f4abf460c13871c837, type: 3}
+    - target: {fileID: 3698872271070013687, guid: 76e2398d46528124497db1ab4e8c4eaa, type: 3}
+      propertyPath: pauseResumeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: b462d6e6250023b4c895f5e3fac55e9b, type: 3}
+    - target: {fileID: 3698872271070013687, guid: 76e2398d46528124497db1ab4e8c4eaa, type: 3}
+      propertyPath: soundeffectVolume
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3698872271070013687, guid: 76e2398d46528124497db1ab4e8c4eaa, type: 3}
+      propertyPath: uiSounds.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3698872271070013687, guid: 76e2398d46528124497db1ab4e8c4eaa, type: 3}
+      propertyPath: backGroundAudioVolume
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3698872271070013687, guid: 76e2398d46528124497db1ab4e8c4eaa, type: 3}
+      propertyPath: uiSounds.Array.data[0]
+      value: 
+      objectReference: {fileID: 8300000, guid: 2eec827de3fbbba4180d291f9258473b, type: 3}
+    - target: {fileID: 3698872271070013687, guid: 76e2398d46528124497db1ab4e8c4eaa, type: 3}
+      propertyPath: mainMenuSound.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3698872271070013687, guid: 76e2398d46528124497db1ab4e8c4eaa, type: 3}
+      propertyPath: backGroundSound.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3698872271070013687, guid: 76e2398d46528124497db1ab4e8c4eaa, type: 3}
+      propertyPath: mainMenuSound.Array.data[1]
+      value: 
+      objectReference: {fileID: 8300000, guid: c1edb984099798b40b9597191fc90d63, type: 3}
+    - target: {fileID: 3698872271070013687, guid: 76e2398d46528124497db1ab4e8c4eaa, type: 3}
+      propertyPath: mainMenuSound.Array.data[2]
+      value: 
+      objectReference: {fileID: 8300000, guid: 7d4aee1b84d325c47a3fcfb6e0942e53, type: 3}
+    - target: {fileID: 3698872271070013687, guid: 76e2398d46528124497db1ab4e8c4eaa, type: 3}
+      propertyPath: backGroundSound.Array.data[1]
+      value: 
+      objectReference: {fileID: 8300000, guid: 91237498bfe89ca4f809252f50087f52, type: 3}
+    - target: {fileID: 3698872271070013687, guid: 76e2398d46528124497db1ab4e8c4eaa, type: 3}
+      propertyPath: backGroundSound.Array.data[2]
+      value: 
+      objectReference: {fileID: 8300000, guid: ef6fb3d9a10c5cf42903220a5f5c1460, type: 3}
+    - target: {fileID: 3698872271070013687, guid: 76e2398d46528124497db1ab4e8c4eaa, type: 3}
+      propertyPath: backGroundSound.Array.data[3]
+      value: 
+      objectReference: {fileID: 8300000, guid: 5b353773b9a2f9b47894d599fa6e7e36, type: 3}
+    - target: {fileID: 3698872271070013687, guid: 76e2398d46528124497db1ab4e8c4eaa, type: 3}
+      propertyPath: backGroundSound.Array.data[4]
+      value: 
+      objectReference: {fileID: 8300000, guid: 4fcd003321cf8f141b9e2fb278e03361, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 76e2398d46528124497db1ab4e8c4eaa, type: 3}
