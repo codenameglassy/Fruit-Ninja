@@ -75,7 +75,6 @@ public class GameManager : MonoBehaviour
         StartCoroutine("SpawnFruits");
         timeScale = 0.75f;
         Time.timeScale = timeScale;
-        soundManager.instance.PlaySound(SoundType.backgroundSound);
         activeLevel = levels[0];
     }
 
@@ -186,15 +185,21 @@ public class GameManager : MonoBehaviour
     {
         UIManager.instance.SwitchCanvas(UIPanelType.GameOver);
         PauseGame();
-        if (score > PlayerPrefs.GetInt("Highscore"))
-        {
-            PlayerPrefs.SetInt("Highscore", score);
-            congratulationText.gameObject.SetActive(true);
-        }
+        
         fruitsCutText.text = "Fruits Cut :  " + fruitscut.ToString();
         GameOverScoreText.text = "Score:          " + score.ToString();
         MaxComboText.text = "Max Combo:  " + maxCombo.ToString();
-        GameOverhighscoreText.text = "High Score :    " + PlayerPrefs.GetInt("Highscore").ToString();
+        GetHighScore();
+    }
+
+    void SubmitScore(int score)
+    {
+        
+    }
+
+    void GetHighScore()
+    {
+        
     }
 
 }

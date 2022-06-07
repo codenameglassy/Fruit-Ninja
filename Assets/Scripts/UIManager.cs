@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-
 public class UIManager : MonoBehaviour
 {
     public static UIManager instance;
@@ -36,21 +35,24 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         SwitchCanvas(uiPanels[0].uiPanelType);
-        soundSlider.value = soundManager.instance.SoundVolume();
-        musicSlider.value = soundManager.instance.MusicVolume();
+        soundSlider.value = soundManager.instance.soundeffectVolume;
+        musicSlider.value = soundManager.instance.backGroundAudioVolume;
+        OnMusicVolumeChanged();
+        OnSoundVolumeChanged();
         soundSlider.onValueChanged.AddListener(delegate { OnSoundVolumeChanged(); });
         musicSlider.onValueChanged.AddListener(delegate { OnMusicVolumeChanged(); });
         if (activeUIPanel.uiPanelType == UIPanelType.mainmenu)
         {
-            highscoreText.text = PlayerPrefs.GetInt("Highscore").ToString();
+            GetHighScore();
         }
+        soundManager.instance.PlaySound(SoundType.backgroundSound);
+        
     }
-
-    // Update is called once per frame
-    void Update()
+    void GetHighScore()
     {
         
     }
+
 
     public void SwitchCanvas(UIPanelType targetPanel)
     {
@@ -84,11 +86,13 @@ public class UIManager : MonoBehaviour
     {
 
         soundManager.instance.MusicVolumeChanged(musicSlider.value);
+        soundManager.instance.SaveMusicVoulme(musicSlider.value);
     }
 
     public void OnSoundVolumeChanged()
     {
         soundManager.instance.SoundVolumeChanged(soundSlider.value);
+        soundManager.instance.SaveSoundVoulme(soundSlider.value);
     }
 
     public void ShowCombo(Vector3 pos,int combotext)

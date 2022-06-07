@@ -43,6 +43,7 @@ public class soundManager : MonoBehaviour
     }
     void Start()
     {
+        
         PlaySound(SoundType.mainMenuSound);
         MusicVolumeChanged(backGroundAudioVolume);
         SoundVolumeChanged(soundeffectVolume);
@@ -158,7 +159,6 @@ public class soundManager : MonoBehaviour
             backGroundAudioSource.volume = volume;
         }
     }
-
     public void SoundVolumeChanged(float volume)
     {
         if (slashAudioSource != null)
@@ -167,21 +167,12 @@ public class soundManager : MonoBehaviour
         }
     }
 
-    public float MusicVolume()
+    public void SaveMusicVoulme(float volume)
     {
-        if (backGroundAudioSource != null)
-        {
-            return backGroundAudioSource.volume;
-        }
-        return 1;
+        backGroundAudioVolume = volume;
     }
-
-    public float SoundVolume()
+    public void SaveSoundVoulme(float volume)
     {
-        if (slashAudioSource != null)
-        {
-            return slashAudioSource.volume;
-        }
-        return 1;
+        soundeffectVolume = volume;
     }
 }
