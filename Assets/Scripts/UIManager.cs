@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using RamailoGames;
 
 public class UIManager : MonoBehaviour
 {
@@ -43,6 +44,7 @@ public class UIManager : MonoBehaviour
         musicSlider.onValueChanged.AddListener(delegate { OnMusicVolumeChanged(); });
         if (activeUIPanel.uiPanelType == UIPanelType.mainmenu)
         {
+            
             GetHighScore();
         }
         soundManager.instance.PlaySound(SoundType.backgroundSound);
@@ -50,7 +52,12 @@ public class UIManager : MonoBehaviour
     }
     void GetHighScore()
     {
-        
+        ScoreAPI.GetData((bool s, Data_RequestData d) => {
+            if (s)
+            {
+                 highscoreText.text = d.high_score.ToString();
+            }
+        });
     }
 
 

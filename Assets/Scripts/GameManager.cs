@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using RamailoGames;
 
 [System.Serializable]
 public struct SpawnPos
@@ -64,6 +65,7 @@ public class GameManager : MonoBehaviour
     public Levels activeLevel;
 
     private int maxCombo;
+    private int startTime;
     private void Awake()
     {
         if (instance == null)
@@ -76,6 +78,7 @@ public class GameManager : MonoBehaviour
         timeScale = 0.75f;
         Time.timeScale = timeScale;
         activeLevel = levels[0];
+        startTime =(int) Time.unscaledTime;
     }
 
     public void PauseGame()
@@ -185,21 +188,30 @@ public class GameManager : MonoBehaviour
     {
         UIManager.instance.SwitchCanvas(UIPanelType.GameOver);
         PauseGame();
-        
         fruitsCutText.text = "Fruits Cut :  " + fruitscut.ToString();
         GameOverScoreText.text = "Score:          " + score.ToString();
         MaxComboText.text = "Max Combo:  " + maxCombo.ToString();
+        int playTime =(int)Time.unscaledTime - startTime;
+        ScoreAPI.SubmitScore(score,playTime, (bool s, string msg) => { });
         GetHighScore();
-    }
-
-    void SubmitScore(int score)
-    {
-        
     }
 
     void GetHighScore()
     {
-        
+        ScoreAPI.GetData((bool s, Data_RequestData d) => {
+            if (s)
+            {
+                if (score >= d.high_score)
+                {
+                    GameOverhighscoreText.text = "High Score :    " + score.ToString();
+                    congratulationText.gameObject.SetActive(true);
+                }
+                else
+                {
+                    GameOverhighscoreText.text = "High Score :    " + d.high_score.ToString();
+                }
+            }
+        });
     }
 
 }

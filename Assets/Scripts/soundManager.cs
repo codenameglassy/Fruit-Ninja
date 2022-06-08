@@ -1,3 +1,4 @@
+using RamailoGames;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -40,6 +41,7 @@ public class soundManager : MonoBehaviour
             instance = this;
         }
         DontDestroyOnLoad(this.gameObject);
+        ScoreAPI.GameStart();
     }
     void Start()
     {
