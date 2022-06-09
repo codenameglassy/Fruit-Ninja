@@ -1685,8 +1685,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnPos:
   - spawnPosition: {fileID: 2070072388}
-    forceAngleLeft: 4
-    forceAngleRight: 36
+    forceAngleLeft: 0
+    forceAngleRight: 31
     force: 10
   - spawnPosition: {fileID: 1027509298}
     forceAngleLeft: -11
