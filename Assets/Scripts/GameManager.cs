@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using RamailoGames;
+using UnityEngine.UI;
 
 [System.Serializable]
 public struct SpawnPos
@@ -45,6 +46,8 @@ public class GameManager : MonoBehaviour
     public TMP_Text GameOverScoreText;
     public TMP_Text MaxComboText;
     public TMP_Text GameOverhighscoreText;
+    public TMP_Text gamePlayhighscoreText;
+    public TMP_Text pausehighscoreText;
     public TMP_Text congratulationText;
 
     public List<GameObject> lifesPrefab;
@@ -56,6 +59,8 @@ public class GameManager : MonoBehaviour
     [Space(10)]
     [Range(0,100)]
     [SerializeField]private int bombSpawnChance=10;
+
+    public Image levelUIImage;
 
     [HideInInspector] public int lifes;
     [HideInInspector] public int score;
@@ -79,12 +84,14 @@ public class GameManager : MonoBehaviour
         Time.timeScale = timeScale;
         activeLevel = levels[0];
         startTime =(int) Time.unscaledTime;
+        setHighScore(gamePlayhighscoreText);
+
     }
 
     public void PauseGame()
     {
         UIManager.instance.DisableCombo();
-       
+        setHighScore(pausehighscoreText);
         Time.timeScale = 0;
     }
 
@@ -146,11 +153,32 @@ public class GameManager : MonoBehaviour
     {
         timeScale = activeLevel.timescale;
         Time.timeScale = timeScale;
+        levelUIImage.rectTransform.localScale = new Vector3((float)activeLevel.Level / levels.Count, 1, 1);
+    }
+    void setHighScore(TMP_Text highscroreTextUI)
+    {
+        ScoreAPI.GetData((bool s, Data_RequestData d) => {
+            if (s)
+            {
+                if (score >= d.high_score)
+                {
+                    highscroreTextUI.text = score.ToString();
+
+                }
+                else
+                {
+                    highscroreTextUI.text = d.high_score.ToString();
+                }
+
+            }
+        });
     }
     public void AddScore(int amount)
     {
         score += amount*combo;
         scoreText.text = score.ToString();
+
+        setHighScore(gamePlayhighscoreText);
         for (int i = levels.Count-1; i >= 0; i--)
         {
             if(score>levels[i].score )
@@ -160,6 +188,7 @@ public class GameManager : MonoBehaviour
                 return;
             }
         }
+        
     }
 
     public void increaseCombo()
@@ -205,13 +234,16 @@ public class GameManager : MonoBehaviour
                 {
                     GameOverhighscoreText.text = "High Score :    " + score.ToString();
                     congratulationText.gameObject.SetActive(true);
+
                 }
                 else
                 {
                     GameOverhighscoreText.text = "High Score :    " + d.high_score.ToString();
                 }
+
             }
         });
+
     }
 
 }

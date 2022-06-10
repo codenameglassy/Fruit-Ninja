@@ -55,7 +55,7 @@ public class UIManager : MonoBehaviour
         ScoreAPI.GetData((bool s, Data_RequestData d) => {
             if (s)
             {
-                 highscoreText.text = d.high_score.ToString();
+                highscoreText.text = d.high_score.ToString();
             }
         });
     }

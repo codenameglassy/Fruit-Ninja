@@ -13,6 +13,7 @@ public enum UIPanelType
     GameOver,
     blank,
     about,
+    howToplay,
 }
 public class UIPanel : MonoBehaviour
 {

@@ -41,15 +41,14 @@ public class soundManager : MonoBehaviour
             instance = this;
         }
         DontDestroyOnLoad(this.gameObject);
-        ScoreAPI.GameStart();
     }
     void Start()
     {
-        
-        PlaySound(SoundType.mainMenuSound);
         MusicVolumeChanged(backGroundAudioVolume);
         SoundVolumeChanged(soundeffectVolume);
         SceneManager.LoadScene(1);
+        ScoreAPI.GameStart((bool s) => {
+        });
     }
 
     // Update is called once per frame

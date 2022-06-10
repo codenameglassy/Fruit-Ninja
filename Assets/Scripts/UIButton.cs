@@ -31,7 +31,6 @@ public class UIButton : MonoBehaviour
     void OnClicked()
     {
         UIManager.instance.SwitchCanvas(nextPanel);
-        print(mytype);
         switch (mytype)
         {
             case ButtonType.none:
