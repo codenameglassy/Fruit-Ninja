@@ -34,11 +34,14 @@ public class GameManager : MonoBehaviour
     [Space(10)]
     public GameObject[] fruitsPrefabs;
     public GameObject bombPrefab;
+    public GameObject[] PowerupPrefab;
+    public GameObject powerUpScreen;
+
+    public TMP_Text gameTimerText;
+    public TMP_Text pauseMenugameTimerText;
 
     [Space(10)]
     public GameObject[] splashEffects;
-
-    public Transform lifeSpace;
 
     [Header("UI Texts")]
     public TMP_Text scoreText;
@@ -59,6 +62,8 @@ public class GameManager : MonoBehaviour
     [Space(10)]
     [Range(0,100)]
     [SerializeField]private int bombSpawnChance=10;
+    [Range(0, 100)]
+    [SerializeField]private int powerUpSpawnChance=10;
 
     public Image levelUIImage;
 
@@ -71,6 +76,11 @@ public class GameManager : MonoBehaviour
 
     private int maxCombo;
     private int startTime;
+
+    private float gameTimer;
+    [SerializeField] private bool paused;
+    [SerializeField] private bool slowmo;
+    private bool canSpawn;
     private void Awake()
     {
         if (instance == null)
@@ -85,46 +95,138 @@ public class GameManager : MonoBehaviour
         activeLevel = levels[0];
         startTime =(int) Time.unscaledTime;
         setHighScore(gamePlayhighscoreText);
+        gameTimer = 300;
+        paused = false;
+        slowmo = false;
+        powerUpScreen.gameObject.SetActive(false);
+        canSpawn = true;
+    }
 
+    private void Update()
+    {
+        if (!paused)
+        {
+            gameTimer -= Time.unscaledDeltaTime;
+            int min = (int)gameTimer / 60;
+            int sec = (int)gameTimer % 60;
+            gameTimerText.text = min.ToString() + ":" + sec.ToString();
+
+            if (gameTimer <= 0)
+            {
+                GameOver();
+            }
+        }
     }
 
     public void PauseGame()
     {
         UIManager.instance.DisableCombo();
         setHighScore(pausehighscoreText);
+        int min = (int)gameTimer / 60;
+        int sec = (int)gameTimer % 60;
+        pauseMenugameTimerText.text = min.ToString() + ":" + sec.ToString();
         Time.timeScale = 0;
+        paused = true;
     }
 
     public void ResumeGame()
     {
         Time.timeScale = timeScale;
+        paused = false;
     }
 
-    public void SlowGame(float value)
+    public void SlowGame(float value,float duration)
     {
-        Time.timeScale = value; 
+        Time.timeScale = value;
+        slowmo = true;
+        powerUpScreen.gameObject.SetActive(true);
+        StartCoroutine("ResumeSlow", duration);
     }
 
+    IEnumerator ResumeSlow(float duration)
+    {
+        yield return new WaitForSecondsRealtime(duration);
+        Time.timeScale = timeScale;
+        slowmo = false;
+        powerUpScreen.gameObject.SetActive(false);
+    }
+    public void PauseWithCollision(float duration)
+    {
+        powerUpScreen.gameObject.SetActive(true);
+        canSpawn = false;
+        fruitController[] controllers = FindObjectsOfType<fruitController>();
+        foreach (fruitController fruit in controllers)
+        {
+            fruit.GetComponent<Rigidbody2D>().bodyType =RigidbodyType2D.Static;
+            fruit.canRotate = false;
+        }
+        Invoke(nameof(ResumeWithCollsion), duration);
+    }
+
+    public void ResumeWithCollsion()
+    {
+        powerUpScreen.gameObject.SetActive(false);
+        canSpawn = true;
+        fruitController[] controllers = FindObjectsOfType<fruitController>();
+        foreach (fruitController fruit in controllers)
+        {
+            if (fruit.fruitType != FruitType.comboMelon)
+            {
+                fruit.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+            }
+        }
+    }
     IEnumerator SpawnFruits()
     {
         while (true)
         {
+            if (canSpawn && !paused)
+            {
+                int spawnIndex = Random.Range(0, spawnPos.Length);
+                float a = Random.Range(spawnPos[spawnIndex].forceAngleLeft * Mathf.Deg2Rad, spawnPos[spawnIndex].forceAngleRight * Mathf.Deg2Rad);
+                Vector3 dir = (transform.up * Mathf.Cos(a) + transform.right * Mathf.Sin(a)).normalized;
+                GameObject fruit;
+                if (Random.Range(0, 100) <= powerUpSpawnChance)
+                {
+                    fruitController[] scenefruits = FindObjectsOfType<fruitController>();
+                    foreach (fruitController scenefruit in scenefruits)
+                    {
+                        if(scenefruit.fruitType!=FruitType.lighteningPowerUp && scenefruit.fruitType != FruitType.comboMelon)
+                        {
+                            int powerUpIndex = Random.Range(0, PowerupPrefab.Length);
+                            fruit = Instantiate(PowerupPrefab[powerUpIndex], spawnPos[spawnIndex].spawnPosition.position, Quaternion.Euler(new(0, 0, -71.4f)));
+                            fruit.GetComponent<fruitController>().AddForce(dir, spawnPos[spawnIndex].force);
+                            break;
+                        }
+                        else
+                        {
+                            int fruitIndex = Random.Range(0, fruitsPrefabs.Length);
+                            fruit = Instantiate(fruitsPrefabs[fruitIndex], spawnPos[spawnIndex].spawnPosition.position, Quaternion.identity);
+                            fruit.GetComponent<fruitController>().AddForce(dir, spawnPos[spawnIndex].force);
+                            break;
+                        }
 
-            int spawnIndex = Random.Range(0, spawnPos.Length);
-            float a =Random.Range( spawnPos[spawnIndex].forceAngleLeft * Mathf.Deg2Rad, spawnPos[spawnIndex].forceAngleRight * Mathf.Deg2Rad);
-            Vector3 dir = (transform.up * Mathf.Cos(a) + transform.right * Mathf.Sin(a)).normalized;
-            GameObject fruit;
-            if (Random.Range(0, 100) <= bombSpawnChance)
-            {
-                fruit = Instantiate(bombPrefab, spawnPos[spawnIndex].spawnPosition.position, Quaternion.identity);
+                    }
+
+                }
+                else if (Random.Range(0, 100) <= bombSpawnChance)
+                {
+                    fruit = Instantiate(bombPrefab, spawnPos[spawnIndex].spawnPosition.position, Quaternion.identity);
+                    fruit.GetComponent<fruitController>().AddForce(dir, spawnPos[spawnIndex].force);
+
+                }
+                else
+                {
+                    int fruitIndex = Random.Range(0, fruitsPrefabs.Length);
+                    fruit = Instantiate(fruitsPrefabs[fruitIndex], spawnPos[spawnIndex].spawnPosition.position, Quaternion.identity);
+                    fruit.GetComponent<fruitController>().AddForce(dir, spawnPos[spawnIndex].force);
+
+                }
             }
+            if(slowmo)
+                yield return new WaitForSeconds(spawnDuration);
             else
-            {
-                int fruitIndex = Random.Range(0, fruitsPrefabs.Length);
-                fruit = Instantiate(fruitsPrefabs[fruitIndex], spawnPos[spawnIndex].spawnPosition.position, Quaternion.identity);
-            }
-            fruit.GetComponent<fruitController>().AddForce(dir, spawnPos[spawnIndex].force);
-            yield return new WaitForSeconds(spawnDuration * timeScale);
+                yield return new WaitForSecondsRealtime(spawnDuration);
         }
     }
 
@@ -151,9 +253,12 @@ public class GameManager : MonoBehaviour
     }
     private void SwitchLevel()
     {
-        timeScale = activeLevel.timescale;
-        Time.timeScale = timeScale;
-        levelUIImage.rectTransform.localScale = new Vector3((float)activeLevel.Level / levels.Count, 1, 1);
+        if (!slowmo)
+        {
+            timeScale = activeLevel.timescale;
+            Time.timeScale = timeScale;
+            levelUIImage.rectTransform.localScale = new Vector3((float)activeLevel.Level / levels.Count, 1, 1);
+        }
     }
     void setHighScore(TMP_Text highscroreTextUI)
     {
@@ -198,20 +303,20 @@ public class GameManager : MonoBehaviour
             maxCombo = combo;
     }
 
-    public void DecreseLife()
-    {
-        lifes--;
+    //public void DecreseLife()
+    //{
+    //    lifes--;
 
-        //GameOver State
-        if (lifes <= 0)
-        {
-            GameOver();
-        }
-        else
-        {
-            Destroy(lifeSpace.GetChild(0).gameObject);
-        }
-    }
+    //    //GameOver State
+    //    if (lifes <= 0)
+    //    {
+    //        GameOver();
+    //    }
+    //    else
+    //    {
+    //        Destroy(lifeSpace.GetChild(0).gameObject);
+    //    }
+    //}
 
     public void GameOver()
     {

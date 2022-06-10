@@ -13,7 +13,13 @@ public class fruitController : MonoBehaviour
     [SerializeField] private float minrotationSpeed;
     [SerializeField] private float maxflowingSpeed;
     [SerializeField] private float minflowingSpeed;
+    [SerializeField] private float powerUpDuration=2;
+    [SerializeField] private float slowEffects=2;
+    [SerializeField] private float combofruitLife=2;
+
     public GameObject rayObjPrefab;
+    public GameObject lighteningEffectPrefab;
+    public GameObject combolighteningEffectPrefab;
 
     [Space(10)]
     [Header("For camera Shake")]
@@ -25,6 +31,7 @@ public class fruitController : MonoBehaviour
     private float spawnTime;
     private Rigidbody2D rb;
 
+    public bool canRotate;
     [HideInInspector] public bool cut;
     // Start is called before the first frame update
     void Awake()
@@ -38,9 +45,11 @@ public class fruitController : MonoBehaviour
     private void Start()
     {
         spawnTime = Time.time;
-    }
+        canRotate=true;
 
-    public void AddForce(Vector2 direction, float force)
+}
+
+public void AddForce(Vector2 direction, float force)
     {
         float totalforce = (force + flowingSpeed);
         rb.AddForce(totalforce * direction, ForceMode2D.Impulse);
@@ -49,7 +58,8 @@ public class fruitController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.Rotate(new Vector3(0, 0, rotationSpeed * Time.deltaTime));
+        if(canRotate)
+            transform.Rotate(new Vector3(0, 0, rotationSpeed * Time.deltaTime));
         
         if (GameManager.instance != null)
         {
@@ -58,10 +68,10 @@ public class fruitController : MonoBehaviour
                 if (cameraController.instance.CheckBound(transform.position))
                 {
                     
-                    if(fruitType != FruitType.bomb)
-                    {
-                        GameManager.instance.DecreseLife();
-                    }
+                    //if(fruitType != FruitType.bomb)
+                    //{
+                    //    GameManager.instance.DecreseLife();
+                    //}
                     Destroy(this.gameObject);
 
                 }
@@ -76,6 +86,10 @@ public class fruitController : MonoBehaviour
         }
     }
 
+
+    private float comboLightAngle;
+    private float lastCut;
+    private float lastComboCut;
     public void CutFruit(Vector3 cutPos)
     {
         if (fruitType == FruitType.bomb)
@@ -84,6 +98,52 @@ public class fruitController : MonoBehaviour
                 return;
             Camera.main.GetComponent<CameraShaker>().Shake(cameraShakeData);
             StartCoroutine("BombExplosionEffect");
+        }
+        else if (fruitType == FruitType.lighteningPowerUp)
+        {
+            GameObject lighteningEffect = Instantiate(lighteningEffectPrefab,transform.position,Quaternion.identity);
+            GameManager.instance.SlowGame(slowEffects, powerUpDuration);
+            Destroy(lighteningEffect,slowEffects*0.5f);
+            Destroy(this.gameObject);
+        }
+        else if (fruitType == FruitType.comboMelon)
+        {
+            if (!cut)
+            {
+                comboLightAngle = 0;
+                if(GameManager.instance!=null)
+                    GameManager.instance.PauseWithCollision(combofruitLife);
+                Destroy(this.gameObject, combofruitLife);
+                cut = true;
+            }
+            else
+            {
+                if ((Time.unscaledTime - lastCut) > 0.05f)
+                {
+                    GameObject combolight = Instantiate(combolighteningEffectPrefab, transform.position, Quaternion.Euler(new(0, 0, comboLightAngle)), this.transform);
+                    comboLightAngle += 15;
+                    lastCut = Time.unscaledTime;
+                    Camera.main.GetComponent<CameraShaker>().Shake(cameraShakeData);
+
+                    GameManager.instance.AddScore(10);
+                    soundManager.instance.PlaySound(SoundType.slashSound);
+                    GameManager.instance.PlaySplash(transform.position, Color.red, 1.2f);
+
+                    if ((Time.unscaledTime - lastComboCut) < 1)
+                    {
+                        GameManager.instance.increaseCombo();
+
+                        UIManager.instance.ShowCombo(Camera.main.WorldToScreenPoint(transform.position), (int)GameManager.instance.combo);
+                    }
+                    else
+                    {
+                        GameManager.instance.combo = 1;
+                        UIManager.instance.DisableCombo();
+                    }
+
+                    lastComboCut = Time.unscaledTime;
+                }
+            }
         }
         else
         {
@@ -125,6 +185,7 @@ public class fruitController : MonoBehaviour
         }
 
     }
+    
 
     IEnumerator BombExplosionEffect()
     {

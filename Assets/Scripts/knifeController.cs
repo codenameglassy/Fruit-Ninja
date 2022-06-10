@@ -10,6 +10,8 @@ public enum FruitType
     papaya,
     melonBluyish,
     bomb,
+    lighteningPowerUp,
+    comboMelon,
 }
 
 public class knifeController : MonoBehaviour
@@ -65,6 +67,7 @@ public class knifeController : MonoBehaviour
             }
             fruitController fruit = collision.gameObject.GetComponent<fruitController>();
             fruit.CutFruit(transform.position);
+            print(fruit.cut);
             Color color=Color.black;
             float scale=1;
             switch (fruit.fruitType)
@@ -88,6 +91,12 @@ public class knifeController : MonoBehaviour
                     break;
                 case FruitType.bomb:
                     fruit.cut = true;
+                    return;
+
+                case FruitType.lighteningPowerUp:
+                    return;
+
+                case FruitType.comboMelon:
                     return;
                 default:
                     break;

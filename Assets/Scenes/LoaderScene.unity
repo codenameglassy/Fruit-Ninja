@@ -140,6 +140,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61045ec60d6b6ab49ac1a2a7a0114939, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &600934965 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1708707539964930928, guid: 523925676348def4fb95dcbfc95e6d2a, type: 3}
+  m_PrefabInstance: {fileID: 800282181}
+  m_PrefabAsset: {fileID: 0}
+--- !u!50 &600934969
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 600934965}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!1001 &800282181
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -479,11 +505,11 @@ PrefabInstance:
       objectReference: {fileID: 8300000, guid: 2eec827de3fbbba4180d291f9258473b, type: 3}
     - target: {fileID: 3698872271070013687, guid: 76e2398d46528124497db1ab4e8c4eaa, type: 3}
       propertyPath: mainMenuSound.Array.size
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3698872271070013687, guid: 76e2398d46528124497db1ab4e8c4eaa, type: 3}
       propertyPath: backGroundSound.Array.size
-      value: 4
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3698872271070013687, guid: 76e2398d46528124497db1ab4e8c4eaa, type: 3}
       propertyPath: mainMenuSound.Array.data[1]
