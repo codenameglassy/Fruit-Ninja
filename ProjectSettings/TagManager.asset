@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Fruits
   - Trails
+  - Fire
   layers:
   - Default
   - TransparentFX
